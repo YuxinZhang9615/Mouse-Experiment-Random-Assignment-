@@ -1,4 +1,8 @@
 library(shiny)
+library(shinyBS)
+library(shinyjs)
+
+jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 
 disableActionButton <- function(id,session) {
   session$sendCustomMessage(type="jsCode",
@@ -6,357 +10,96 @@ disableActionButton <- function(id,session) {
                                              ,sep="")))
 }
 
-disableAll <- function(session){
-  disableActionButton('btn1', session)
-  disableActionButton('btn2', session)
-  disableActionButton('btn3', session)
-  disableActionButton('btn4', session)
-  disableActionButton('btn5', session)
-  disableActionButton('btn6', session)
-  disableActionButton('btn7', session)
-  disableActionButton('btn8', session)
-  disableActionButton('btn9', session)
-  disableActionButton('btn10', session)
-  disableActionButton('btn11', session)
-  disableActionButton('btn12', session)
-  disableActionButton('btn13', session)
-  disableActionButton('btn14', session)
-  disableActionButton('btn15', session)
-  disableActionButton('btn16', session)
-  disableActionButton('btn17', session)
-  disableActionButton('btn18', session)
-  disableActionButton('btn19', session)
-  disableActionButton('btn20', session)
-}
-
-
 shinyServer(function(input, output,session) {
   
-  observe({
-    if(input$btn1 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn1",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
+  observeEvent(input$reset_button, {js$reset()}) 
   
-  observe({
-    if(input$btn2 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn2",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn3 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn3",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn4 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn4",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn5 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn5",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn6 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn6",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  
-  observe({
-    if(input$btn7 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn7",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn8 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn8",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn9 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn9",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn10 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn10",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn11 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn11",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  
-  observe({
-    if(input$btn12 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn12",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn13 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn13",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn14 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn14",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn15 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn15",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn16 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn16",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  
-  observe({
-    if(input$btn17 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn17",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn18 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn18",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn19 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn19",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  observe({
-    if(input$btn20 == 0) 
-    {
-      return()
-    }
-    
-    else
-    {
-      disableActionButton("btn20",session)
-      while(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
-            input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
-      {
-        disableAll(session)
-      }
-    }
-  })
-  
+  observeEvent(input$btn1,({
+    updateButton(session, "btn1", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn2,({
+    updateButton(session, "btn2", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn3,({
+    updateButton(session, "btn3", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn4,({
+    updateButton(session, "btn4", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn5,({
+    updateButton(session, "btn5", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn6,({
+    updateButton(session, "btn6", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn7,({
+    updateButton(session, "btn7", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn8,({
+    updateButton(session, "btn8", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn9,({
+    updateButton(session, "btn9", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn10,({
+    updateButton(session, "btn10", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn11,({
+    updateButton(session, "btn11", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn12,({
+    updateButton(session, "btn12", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn13,({
+    updateButton(session, "btn13", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn14,({
+    updateButton(session, "btn14", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn15,({
+    updateButton(session, "btn15", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn16,({
+    updateButton(session, "btn16", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn17,({
+    updateButton(session, "btn17", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn18,({
+    updateButton(session, "btn18", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn19,({
+    updateButton(session, "btn19", style = "danger", disabled = TRUE)})
+  )
+  observeEvent(input$btn20,({
+    updateButton(session, "btn20", style = "danger", disabled = TRUE)})
+  )
+
+  # observe({
+  #   if (input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
+  #       input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20 > 10)
+  #   {disableActionButton("btn1",session)
+  #     disableActionButton("btn2",session)
+  #     disableActionButton("btn3",session)
+  #     disableActionButton("btn4",session)
+  #     disableActionButton('btn5', session)
+  #     disableActionButton('btn6', session)
+  #     disableActionButton('btn7', session)
+  #     disableActionButton('btn8', session)
+  #     disableActionButton('btn9', session)
+  #     disableActionButton('btn10', session)
+  #     disableActionButton('btn11', session)
+  #     disableActionButton('btn12', session)
+  #     disableActionButton('btn13', session)
+  #     disableActionButton('btn14', session)
+  #     disableActionButton('btn15', session)
+  #     disableActionButton('btn16', session)
+  #     disableActionButton('btn17', session)
+  #     disableActionButton('btn18', session)
+  #     disableActionButton('btn19', session)
+  #     disableActionButton('btn20', session)}
+  # })
+
   output$num = renderText(input$btn1 + input$btn2 + input$btn3 + input$btn4 + input$btn5 + input$btn6 + input$btn7 + input$btn8 + input$btn9 + input$btn10 +
                             input$btn11 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn16 + input$btn17 + input$btn18 + input$btn19 + input$btn20)
   

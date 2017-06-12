@@ -1,5 +1,6 @@
 library(shiny)
 library(shinyjs)
+library(shinyBS)
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 

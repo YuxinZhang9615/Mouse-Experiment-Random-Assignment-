@@ -2,6 +2,22 @@ library(shiny)
 library(shinyBS)
 library(shinyjs)
 
+# output$aveTu = renderText({
+#   data = read.csv("database.csv")
+#   colnames(data) = c("Color","Weight(g)","Age(wks)","TumorMass(mg)","Gender")
+#   print(sum(c(input$btn1,input$btn2,input$btn3,input$btn4,input$btn5,input$btn6,input$btn7,input$btn8,input$btn9,input$btn10,
+#               input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20)*data[,"TumorMass(mg)"])/10)
+# })
+
+
+# model <- function(data){
+# 
+#   for (i in 1:20){
+#     if (input$btni == 0)
+#   }
+# }
+
+
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 
 disableActionButton <- function(id,session) {
@@ -12,6 +28,7 @@ disableActionButton <- function(id,session) {
 
 shinyServer(function(input, output,session) {
   
+ 
   observeEvent(input$reset_button, {js$reset()}) 
   
   observeEvent(input$btn1,({
@@ -115,10 +132,29 @@ shinyServer(function(input, output,session) {
                 input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20)*data[,"Age(wks)"])/10)
   })
   output$aveTu = renderText({
+    
     data = read.csv("database.csv")
     colnames(data) = c("Color","Weight(g)","Age(wks)","TumorMass(mg)","Gender")
+    
+    model <- function(data){
+      val <- reactiveValues(btn = c(input$btn1,input$btn2,input$btn3,input$btn4,input$btn5,input$btn6,input$btn7,input$btn8,input$btn9,input$btn10,
+                                    input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20))
+      
+      TuMass = c()
+      for (i in 1:20){
+        if (val$btn[i] == 0){TuMass[i] = data[i,4] + rnorm(1, mean = 0, sd = 0.05 * (data[i,4]))}
+        else{TuMass[i] = data[i,4] * 0.6 + rnorm(1, mean = 0, sd = 0.05 * (data[i,4] * 0.6))}
+        
+      }
+      return(TuMass)
+    }
+    
+    TuM = model(data)
+    # data = read.csv("database.csv")
+    # colnames(data) = c("Color","Weight(g)","Age(wks)","TumorMass(mg)","Gender")
+    
     print(sum(c(input$btn1,input$btn2,input$btn3,input$btn4,input$btn5,input$btn6,input$btn7,input$btn8,input$btn9,input$btn10,
-                input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20)*data[,"TumorMass(mg)"])/10)
+                input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20)*TuM)/10)
   })
   output$gend = renderText((input$btn2 + input$btn3 + input$btn6 + input$btn7 + input$btn9 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn19)/10)
   output$col = renderText((input$btn1 + input$btn4 + input$btn6 + input$btn8 + input$btn12 + input$btn17 + input$btn18 + input$btn19 + input$btn20)/10)

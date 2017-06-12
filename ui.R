@@ -1,6 +1,13 @@
 library(shiny)
+library(shinyjs)
+library(shinyBS)
+
+jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 
 shinyUI(fluidPage(
+  useShinyjs(),                                         
+  extendShinyjs(text = jsResetCode),                     
+
   tags$head(tags$script(HTML('
                              Shiny.addCustomMessageHandler("jsCode",
                              function(message) {
@@ -8,52 +15,53 @@ shinyUI(fluidPage(
                              eval(message.code);
                              }
                              );
-                             '))
-  ),
+                             '))),
   
   titlePanel("Please choose 10 Mice for the Raspberry Treatment"),
-  
-  mainPanel(
-    wellPanel(
-      
-      fluidRow( column(3,img(src='brown3.png', width = 80), actionButton("btn1","")),
-                column(5,img(src='black3r.png', width = 100), actionButton("btn2",'')),
-                column(4,img(src='black3.png', width = 120), actionButton("btn3",''))), br(),
-      fluidRow( column(2, offset = 1, img(src='brown3.png', width = 130), actionButton("btn4",'')),
-                column(5,offset = 1,img(src='black3r.png', width = 80), actionButton("btn5",""))),
-      br(),
-      fluidRow( column(5,offset = 4, img(src='brown3.png', width = 120), actionButton("btn6",'')),
-                column(2, offset = 1, img(src='black3.png', width = 70), actionButton("btn7",''))),
-      
-      fluidRow( column(4, offset = 6, img(src='brown3.png', width = 160), actionButton("btn8",""))),
-      fluidRow( column(5, offset = 1, img(src='black3.png', width = 150), actionButton("btn9",'')),
-                column(2, offset = 3, img(src='black3.png', width = 80), actionButton("btn10",''))),
-      fluidRow( column(7, img(src='black3r.png', width = 80),  actionButton("btn11","")),
-                column(5, img(src='brown3.png', width = 90),actionButton("btn12",''))),
-      fluidRow( column(5, offset = 2, img(src='black3.png', width = 150), actionButton("btn13",""))),
-      fluidRow( column(6, offset = 5, img(src='black3.png', width = 180), actionButton("btn14",'')),
-                column(2, offset = 1, img(src='black3.png', width = 80), actionButton("btn15",''))),
-      fluidRow( column(4, offset = 1, img(src='black3.png', width = 100), actionButton("btn16","")),
-                column(6, img(src='brown3.png', width = 80), actionButton("btn17",''))),
-      fluidRow( column(4, offset = 0, img(src='brown3.png', width = 120), actionButton("btn18",""))),
-      fluidRow( column(3, offset = 6, img(src='brown3r.png', width = 110), actionButton("btn19",'')),
-                column(2, offset = 0, img(src='brown3.png', width = 150), actionButton("btn20",''))),
-      br(),
-      br(),
-      br(),
-      fluidRow(textOutput("num")," number of chosen mice."),
-      fluidRow(column(2,offset = 10,actionButton("submit","Submit Selection")))
-      )
-  ),
-  
+  sidebarLayout(
   sidebarPanel(h3("Raspberries have a high content of many beneficial compounds like vitamins C and E, folic and ellagic acid, calcium, selenium, etc. As a result, researchers have recently been investigating 
                    their anti-cancer properties. The twenty mice in the picture all have a tumor growing just under the skin on their backs. To test if raspberries can help reduce the growth of these tumors, 
-                   ten mice will be chosen to have raspberries added in their diet and the remaining ten will eat a normal diet without the raspberries."), 
-               h3("Please pick the ten mice to receive the raspberry diet (just click on mice you want to include in the raspberry group until you have selected ten, then click the submit selections button)."),
-               img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),
-               img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50)),
-  br(),
-  br(),
+               ten mice will be chosen to have raspberries added in their diet and the remaining ten will eat a normal diet without the raspberries."), 
+            h3("Please pick the ten mice to receive the raspberry diet (just click on mice you want to include in the raspberry group until you have selected ten, then click the submit selections button)."),
+            img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),
+            img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),
+            sliderInput("theta","Adjust theta:", min = 0, value = 0.6, max = 1)),
+  
+  
+  mainPanel(
+    
+      fluidRow( column(3,bsButton("btn1",label = tags$img(src = 'brown3.png',width = 80))),
+                column(5,bsButton("btn2",label = tags$img(src='black3r.png', width = 100))),
+                column(4,bsButton("btn3",label = tags$img(src='black3.png', width = 120)))), br(),
+      fluidRow( column(2, offset = 1, bsButton("btn4",label = tags$img(src='brown3.png', width = 130))),
+                column(5,offset = 1, bsButton("btn5",label = tags$img(src='black3r.png', width = 80)))),
+      br(),
+      fluidRow( column(5,offset = 4, bsButton("btn6",label = tags$img(src='brown3.png', width = 120))),
+                column(2, offset = 1, bsButton("btn7",label = tags$img(src='black3.png', width = 70)))),
+      
+      fluidRow( column(4, offset = 6, bsButton("btn8",label = tags$img(src='brown3.png', width = 160)))),
+      fluidRow( column(5, offset = 1, bsButton("btn9",label = tags$img(src='black3.png', width = 150))),
+                column(2, offset = 3, bsButton("btn10",label = tags$img(src='black3.png', width = 80)))),
+      fluidRow( column(7, bsButton("btn11",label = tags$img(src='black3r.png', width = 80))),
+                column(5, bsButton("btn12",label = tags$img(src='brown3.png', width = 90)))),
+      fluidRow( column(5, offset = 2, bsButton("btn13",label = tags$img(src='black3.png', width = 150)))),
+      fluidRow( column(6, offset = 5, bsButton("btn14",label = tags$img(src='black3.png', width = 180))),
+                column(2, offset = 1, bsButton("btn15",label = tags$img(src='black3.png', width = 80)))),
+      fluidRow( column(4, offset = 1, bsButton("btn16",label = tags$img(src='black3.png', width = 100))),
+                column(6, bsButton("btn17",label = tags$img(src='brown3.png', width = 80)))),
+      fluidRow( column(4, offset = 0, bsButton("btn18",label = tags$img(src='brown3.png', width = 120)))),
+      fluidRow( column(3, offset = 6, bsButton("btn19",label = tags$img(src='brown3r.png', width = 110))),
+                column(2, offset = 0, bsButton("btn20",label = tags$img(src='brown3.png', width = 150)))),
+      br(),
+      fluidRow(textOutput("num")," number of chosen mice."),
+      fluidRow(
+        column(8,actionButton("reset_button", "Reset")),
+        column(2,actionButton("submit","Submit Selection")))
+      
+  )
+  ),
+  
+  
   hr(),
   conditionalPanel(
     condition = "(output.num == 10)&(input.submit != 0)",
@@ -79,5 +87,4 @@ shinyUI(fluidPage(
       
    )
   )
-
-  )
+)

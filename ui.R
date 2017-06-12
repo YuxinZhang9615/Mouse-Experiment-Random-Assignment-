@@ -24,7 +24,9 @@ shinyUI(fluidPage(
                ten mice will be chosen to have raspberries added in their diet and the remaining ten will eat a normal diet without the raspberries."), 
             h3("Please pick the ten mice to receive the raspberry diet (just click on mice you want to include in the raspberry group until you have selected ten, then click the submit selections button)."),
             img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),
-            img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50)),
+            img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),
+            sliderInput("theta","Adjust theta:", min = 0, value = 0.6, max = 1)),
+  
   
   mainPanel(
     

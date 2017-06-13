@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyBS)
 library(shinyjs)
+library(V8)
 
 #Use jscode to for reset button to reload the app
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
@@ -14,17 +15,35 @@ disableActionButton <- function(id,session) {
 
 #Define the function to extract tumor mass from the raspberry experiment model
 model <- function(data,val,theta){
-  TuMass = c()
+  TuMass = data[,4]
   for (i in 1:20){
-    if (val$btn[i] == 0){TuMass[i] = data[i,4] + rnorm(1, mean = 0, sd = 0.05 * (data[i,4]))}
-    else{TuMass[i] = data[i,4] * theta + rnorm(1, mean = 0, sd = 0.05 * (data[i,4] * theta))}
+    if (val$btn[i] == 0){
+      TuMass[i] = TuMass[i] + rnorm(1, mean = 0, sd = 0.05 * TuMass[i])
+      }
+    else{
+      TuMass[i] = TuMass[i] * theta + rnorm(1, mean = 0, sd = 0.05 * (TuMass[i] * theta))
+      }
   }
   return(TuMass)
 }
 
-#Load the data in global environment for this app
+##Load and edit the data in global environment for this app
 data = read.csv("database.csv")
 colnames(data) = c("Color","Weight(g)","Age(wks)","TumorMass(mg)","Gender")
+#Change the column color and gender from factor to numeric
+data$Color = as.character(data$Color)
+for (i in 1:20){
+  if (data$Color[i] == "brown"){data$Color[i] = 1}
+  else {data$Color[i] = 0}
+}
+data$Color = as.numeric(data$Color)
+
+data$Gender = as.character(data$Gender)
+for (i in 1:20){
+  if (data$Gender[i] == "Female"){data$Gender[i] = 1}
+  else {data$Gender[i] = 0}
+}
+data$Gender = as.numeric(data$Gender)
 
 
 ####################################################
@@ -91,8 +110,8 @@ shinyServer(function(input, output,session) {
     TuM = model(data,val,input$theta)
     print(sum(val$btn * TuM)/10)
   })
-  output$gend = renderText((input$btn2 + input$btn3 + input$btn6 + input$btn7 + input$btn9 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn19)/10)
-  output$col = renderText((input$btn1 + input$btn4 + input$btn6 + input$btn8 + input$btn12 + input$btn17 + input$btn18 + input$btn19 + input$btn20)/10)
+  output$gend = renderText(sum(val$btn * data[,"Gender"])/10)
+  output$col = renderText(sum(val$btn * data[,"Color"])/10)
   
   #Print everything for control group
   output$aveWeightC = renderText({
@@ -101,61 +120,80 @@ shinyServer(function(input, output,session) {
     print(sum((1-val$btn)*data[,"Age(wks)"])/10)
   })
   output$aveTuC = renderText({
-    print(sum((1-c(input$btn1,input$btn2,input$btn3,input$btn4,input$btn5,input$btn6,input$btn7,input$btn8,input$btn9,input$btn10,
-                input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20))*data[,"TumorMass(mg)"])/10)
+    TuM = model(data,val,input$theta)
+    print(sum((1-val$btn) * TuM)/10)
   })
-  output$gendC = renderText(((1-input$btn2) + (1-input$btn3) + (1-input$btn6) + (1-input$btn7) + (1-input$btn9) + (1-input$btn12) + (1-input$btn13) + (1-input$btn14) + (1-input$btn15) + (1-input$btn19))/10)
-  output$colC = renderText(((1-input$btn1) + (1-input$btn4) + (1-input$btn6) + (1-input$btn8) + (1-input$btn12) + (1-input$btn17) + (1-input$btn18) + (1-input$btn19) + (1-input$btn20))/10)
+  
+  # output$tu = renderPrint({
+  #   TuM = model(data,val,input$theta)
+  #   print(TuM)
+  # })
+  output$gendC = renderText(sum((1-val$btn) * data[,"Gender"])/10)
+  output$colC = renderText(sum((1-val$btn) * data[,"Color"])/10)
   
   output$weight = renderPlot({
-    wei = sum(c(input$btn1,input$btn2,input$btn3,input$btn4,input$btn5,input$btn6,input$btn7,input$btn8,input$btn9,input$btn10,
-                input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20)*data[,"Weight(g)"])/10
-    weiC = sum((1-c(input$btn1,input$btn2,input$btn3,input$btn4,input$btn5,input$btn6,input$btn7,input$btn8,input$btn9,input$btn10,
-             input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20))*data[,"Weight(g)"])/10
-    
+    wei = sum(val$btn * data[,"Weight(g)"])/10
+    weiC = sum((1 - val$btn) * data[,"Weight(g)"])/10
     barplot(c(wei,weiC),
             names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Weight", 
             ylab = "Weight(g)", col = c("#C7053D","beige"))
-  }, width = 290)
+  }, width = 400)
+  
   output$age = renderPlot({
-    age = sum(c(input$btn1,input$btn2,input$btn3,input$btn4,input$btn5,input$btn6,input$btn7,input$btn8,input$btn9,input$btn10,
-                input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20)*data[,"Age(wks)"])/10
-    ageC = sum((1-c(input$btn1,input$btn2,input$btn3,input$btn4,input$btn5,input$btn6,input$btn7,input$btn8,input$btn9,input$btn10,
-                    input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20))*data[,"Age(wks)"])/10
-    
+    age = sum(val$btn * data[,"Age(wks)"])/10
+    ageC = sum((1 - val$btn) * data[,"Age(wks)"])/10
     barplot(c(age,ageC),
             names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Age", 
             ylab = "Age(wks)", col = c("#C7053D","beige"))
-  }, width = 290)
+  }, width = 400)
+  
   output$tumor = renderPlot({
-    age = sum(c(input$btn1,input$btn2,input$btn3,input$btn4,input$btn5,input$btn6,input$btn7,input$btn8,input$btn9,input$btn10,
-                input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20)*data[,"TumorMass(mg)"])/10
-    ageC = sum((1-c(input$btn1,input$btn2,input$btn3,input$btn4,input$btn5,input$btn6,input$btn7,input$btn8,input$btn9,input$btn10,
-                    input$btn11,input$btn12,input$btn13,input$btn14,input$btn15,input$btn16,input$btn17,input$btn18,input$btn19,input$btn20))*data[,"TumorMass(mg)"])/10
-    
+    TuM = model(data,val,input$theta)
+    age = sum(val$btn * TuM)/10
+    ageC = sum((1-val$btn) * TuM)/10
     barplot(c(age,ageC),
             names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Tumor Mass", 
             ylab = "Tumor Mass(mg)", col = c("#C7053D","beige"))
-  },width = 290)
+  },width = 400)
+  
   output$gender = renderPlot({
-    barplot(prop.table(rbind(c((input$btn2 + input$btn3 + input$btn6 + input$btn7 + input$btn9 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn19),
-                               (10 - (input$btn2 + input$btn3 + input$btn6 + input$btn7 + input$btn9 + input$btn12 + input$btn13 + input$btn14 + input$btn15 + input$btn19))),
-                             c((input$btn1 + input$btn4 + input$btn5 + input$btn8 + input$btn10 + input$btn11 + input$btn16 + input$btn17 + input$btn18 + input$btn20),
-                               (10 - (input$btn1 + input$btn4 + input$btn5 + input$btn8 + input$btn10 + input$btn11 + input$btn16 + input$btn17 + input$btn18 + input$btn20)))),2),
+    barplot(prop.table(rbind(c((sum(val$btn * data[,"Gender"])),
+                               (sum((1 - val$btn) * data[,"Gender"]))),
+                             c((sum(val$btn * (1 - data[,"Gender"]))),
+                               (sum((1 - val$btn) * (1 - data[,"Gender"]))))),2),
             col = c("#FBB4AE","#B3CDE3"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of gender")
-  },width = 290)
+  },width = 400)
+  
   output$color = renderPlot({
-    barplot(prop.table(rbind(c((input$btn1 + input$btn4 + input$btn6 + input$btn8 + input$btn12 + input$btn17 + input$btn18 + input$btn19 + input$btn20),
-                               (9 - (input$btn1 + input$btn4 + input$btn6 + input$btn8 + input$btn12 + input$btn17 + input$btn18 + input$btn19 + input$btn20))),
-                             c((input$btn2 + input$btn3 + input$btn5 + input$btn7 + input$btn9 + input$btn10 + input$btn11 + input$btn13 + input$btn14 + input$btn15 + input$btn16),
-                               (11 - (input$btn2 + input$btn3 + input$btn5 + input$btn7 + input$btn9 + input$btn10 + input$btn11 + input$btn13 + input$btn14 + input$btn15 + input$btn16)) )),2),
+    barplot(prop.table(rbind(c((sum(val$btn * data[,"Color"])),
+                               (sum((1 - val$btn) * data[,"Color"]))),
+                             c((sum(val$btn * (1 - data[,"Color"]))),
+                               (sum((1 - val$btn) * (1 - data[,"Color"]))))),2),
             col = c("#BE996E","black"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of colors")
-  },width = 290)
+  },width = 400)
+  
+  ##Print raw data with group number (1 for experimental group; 0 for control group)
   output$dataf = renderPrint({
-    data = read.csv("database.csv")
-    colnames(data) = c("Color","Weight(g)","Age(wks)","Gender","TumorMass(mg)")
-    data$Group = c(1*input$btn1,1*input$btn2,1*input$btn3,1*input$btn4,1*input$btn5,1*input$btn6,1*input$btn7,1*input$btn8,1*input$btn9,1*input$btn10,
-                   1*input$btn11,1*input$btn12,1*input$btn13,1*input$btn14,1*input$btn15,1*input$btn16,1*input$btn17,1*input$btn18,1*input$btn19,1*input$btn20)
+    data$Group = val$btn
+    for (i in 1:20){
+      if (data$Group[i] == 1){data$Group[i] = "Raspberry"}
+      else {data$Group[i] = "Control"}
+    }
+    
+    TuM = model(data,val,input$theta)
+    data[,4] = TuM
+    
+    
+    for (i in 1:20){
+      if (data$Color[i] == 1){data$Color[i] = "Brown"}
+      else {data$Color[i] = "Black"}
+    }
+
+    for (i in 1:20){
+      if (data$Gender[i] == 1){data$Gender[i] = "Female"}
+      else {data$Gender[i] = "Male"}
+    }
+
     print(data)
   })
   

@@ -11,33 +11,20 @@ shinyUI(
 
   
   navbarPage("Random Assignment",
-            
-             tabPanel("Generate by Hand",
-                      # #Use jscode to for reset button to reload the app
-                      # useShinyjs(),
-                      # extendShinyjs(text = jsResetCode),
-                      # #Use jscode to disable all the buttons
-                      # tags$head(tags$script(HTML('
-                      #                            Shiny.addCustomMessageHandler("jsCode",
-                      #                            function(message) {
-                      #                            console.log(message)
-                      #                            eval(message.code);
-                      #                            }
-                      #                            );
-                      #                            '))),
+                tabPanel("Generate by Hand",
                       fluidPage(
-                        # #Use jscode to for reset button to reload the app
-                        # useShinyjs(),
-                        # extendShinyjs(text = jsResetCode),
-                        # #Use jscode to disable all the buttons
-                        # tags$head(tags$script(HTML('
-                        #                            Shiny.addCustomMessageHandler("jsCode",
-                        #                            function(message) {
-                        #                            console.log(message)
-                        #                            eval(message.code);
-                        #                            }
-                        #                            );
-                        #                            '))),
+                        #Use jscode to for reset button to reload the app
+                        useShinyjs(),
+                        extendShinyjs(text = jsResetCode),
+                        #Use jscode to disable all the buttons
+                        tags$head(tags$script(HTML('
+                                                   Shiny.addCustomMessageHandler("jsCode",
+                                                   function(message) {
+                                                   console.log(message)
+                                                   eval(message.code);
+                                                   }
+                                                   );
+                                                   '))),
                         
                         titlePanel("Please choose 10 Mice for the Raspberry Treatment"),
                         sidebarLayout(
@@ -47,7 +34,6 @@ shinyUI(
                                        h3("Please pick the ten mice to receive the raspberry diet (just click on mice you want to include in the raspberry group until you have selected ten, then click the submit selections button)."),
                                        img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),
                                        img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50)
-                                       #verbatimTextOutput("tu")
                           ),
                           
                           mainPanel(
@@ -102,13 +88,18 @@ shinyUI(
                                               )
                                             )
                             ),
-                            column(3, sliderInput("theta","Adjust theta:",min = 0, max = 1, value = 0.6))
+                            column(3,
+                                sliderInput("theta", 
+                                            label = div(style='width:400px;', 
+                                                        div(style='float:left;', 'No Treatment Effect'), 
+                                                        div(style='float:right;', 'Absolute Treatment Effect')), 
+                                            min = 0, max = 1, value = 0.6, width = '400px'))
                             ),
                             fluidRow(
-                              column(4,plotOutput("weight")), column(4,plotOutput("age")), column(4,plotOutput("tumor")) 
+                              column(3,plotOutput("weight")), column(3,plotOutput("age")), column(6,plotOutput("tumor")) 
                             ),
                             fluidRow(
-                              column(4,plotOutput("gender")), column(4,plotOutput("color"))
+                              column(5,plotOutput("gender")), column(5,plotOutput("color"))
                             ),
                             fluidRow(
                               actionButton("getdata","Use Raw Data")
@@ -123,40 +114,33 @@ shinyUI(
                         wellPanel(
                           fluidRow(
                                    column(1,numericInput("times", "Simulations", value = 1)),
-                                   column(5,h4("Enter number to run multiple trials with one button press."))
+                                   column(5,h4("Enter number to run multiple trials. (Hint: Try entering 10, 100, 1000, etc.)"))
                                    )
                           ),
                         fluidRow(
                           column(6, tableOutput("computerTable")),
-                          column(6, sliderInput("compTheta","Adjust theta:",min = 0, max = 1, value = 0.6))
+                          column(6, sliderInput("compTheta", 
+                                                label = div(style='width:400px;', 
+                                                            div(style='float:left;', 'No Treatment Effect'), 
+                                                            div(style='float:right;', 'Absolute Treatment Effect')), 
+                                                min = 0, max = 1, value = 0.6, width = '400px'))
                         ),
                         fluidRow(
-                          column(4,plotOutput("compWeightBar")), column(4,plotOutput("compAgeBar")), column(4,plotOutput("compTumorBar"))
+                          column(3,plotOutput("compWeightBar")), column(3,plotOutput("compAgeBar")), column(6,plotOutput("compTumorBar"))
                         ),
                         fluidRow(
                           column(4,plotOutput("compWeightHist")), column(4,plotOutput("compAgeHist")), column(4,plotOutput("compTumorHist"))
                         ),
                     
                             fluidRow(
-                              actionButton("compGetdata","Use Raw Data")
+                              actionButton("compGetdata","Use the data from last trial")
                             )
                             , conditionalPanel("input.compGetdata != 0", 
-                                               column(6,verbatimTextOutput("dataf")),
-                                               column(6,verbatimTextOutput("compDataf")))
+                                               column(6,verbatimTextOutput("compDataf"))
+                                               )
                           )
-                          
-                        
+
                       )
-                      
-             
-             
-             
-             
-             
-             
+  
              )
-  
-  
-  
-  
 )

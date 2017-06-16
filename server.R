@@ -28,7 +28,7 @@ model <- function(data,val,theta){
   return(TuMass)
 }
 
-model <- function(data,index,theta){
+compModel <- function(data,index,theta){
   TuMass = data[,4]
   for (i in 1:20){
     if (any(i == index)){
@@ -233,7 +233,7 @@ shinyServer(function(input, output,session) {
       compWeightC[i] = mean(data[-exp,"Weight(g)"])
       compAge[i] = mean(data[exp,"Age(wks)"])
       compAgeC[i] = mean(data[-exp,"Age(wks)"])
-      Tumor = model(data,exp,input$compTheta)
+      Tumor = compModel(data,exp,input$compTheta)
       compTum[i] = mean(Tumor[exp])
       compTumC[i] = mean(Tumor[-exp])
       diffWeight[i] = compWeight[i] - compWeightC[i]

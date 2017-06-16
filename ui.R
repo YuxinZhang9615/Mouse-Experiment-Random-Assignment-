@@ -13,18 +13,18 @@ shinyUI(
   navbarPage("Random Assignment",
             
              tabPanel("Generate by Hand",
-                      #Use jscode to for reset button to reload the app
-                      useShinyjs(),
-                      extendShinyjs(text = jsResetCode),
-                      #Use jscode to disable all the buttons
-                      tags$head(tags$script(HTML('
-                                                 Shiny.addCustomMessageHandler("jsCode",
-                                                 function(message) {
-                                                 console.log(message)
-                                                 eval(message.code);
-                                                 }
-                                                 );
-                                                 '))),
+                      # #Use jscode to for reset button to reload the app
+                      # useShinyjs(),
+                      # extendShinyjs(text = jsResetCode),
+                      # #Use jscode to disable all the buttons
+                      # tags$head(tags$script(HTML('
+                      #                            Shiny.addCustomMessageHandler("jsCode",
+                      #                            function(message) {
+                      #                            console.log(message)
+                      #                            eval(message.code);
+                      #                            }
+                      #                            );
+                      #                            '))),
                       fluidPage(
                         # #Use jscode to for reset button to reload the app
                         # useShinyjs(),

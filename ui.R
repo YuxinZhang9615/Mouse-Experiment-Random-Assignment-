@@ -8,8 +8,6 @@ library(V8)
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 
 shinyUI(
-
-  
   navbarPage("Random Assignment",
                 tabPanel("Generate by Hand",
                       fluidPage(

@@ -197,7 +197,7 @@ shinyServer(function(input, output,session) {
     TuM = model(data,val,input$theta)
     data[,4] = TuM
     
-    
+    #Change the column color and gender from numeric into string
     for (i in 1:20){
       if (data$Color[i] == 1){data$Color[i] = "Brown"}
       else {data$Color[i] = "Black"}
@@ -212,7 +212,7 @@ shinyServer(function(input, output,session) {
   })
   
 ###########################################################
-
+#Save all the vectors that will be used later in reactive environment
   table <- reactive({
     compWeight = c()
     compWeightC = c()
@@ -224,9 +224,11 @@ shinyServer(function(input, output,session) {
     diffAge = c()
     diffTum = c()
   
-   
+#Use for loop to simulate many times   
     for (i in 1:input$times){
+      #Use random sampling to get 10 mice for experimental group each time
       exp = sample(1:20,10)
+      #Get the average weight, age, tumor mass for both groups in each simulation and save as vectors
       compWeight[i] = mean(data[exp,"Weight(g)"])
       compWeightC[i] = mean(data[-exp,"Weight(g)"])
       compAge[i] = mean(data[exp,"Age(wks)"])
@@ -234,6 +236,7 @@ shinyServer(function(input, output,session) {
       Tumor = compModel(data,exp,input$compTheta)
       compTum[i] = mean(Tumor[exp])
       compTumC[i] = mean(Tumor[-exp])
+      #Get the difference between two groups in average weight, average age, average tumor mass
       diffWeight[i] = compWeight[i] - compWeightC[i]
       diffAge[i] = compAge[i] - compAgeC[i]
       diffTum[i] = compTum[i] - compTumC[i]

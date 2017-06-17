@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyBS)
 library(shinyjs)
+library(ggplot2)
 library(V8)
 
 #Use jscode to for reset button to reload the app
@@ -21,8 +22,21 @@ model <- function(data,val,theta){
       TuMass[i] = TuMass[i] + rnorm(1, mean = 0, sd = 0.05 * TuMass[i])
       }
     else{
-      TuMass[i] = TuMass[i] * theta + rnorm(1, mean = 0, sd = 0.05 * (TuMass[i] * theta))
+      TuMass[i] = TuMass[i] * (1 - theta) + rnorm(1, mean = 0, sd = 0.05 * (TuMass[i] * (1 - theta)))
       }
+  }
+  return(TuMass)
+}
+
+compModel <- function(data,index,theta){
+  TuMass = data[,4]
+  for (i in 1:20){
+    if (any(i == index)){
+      TuMass[i] = TuMass[i] + rnorm(1, mean = 0, sd = 0.05 * TuMass[i])
+    }
+    else{
+      TuMass[i] = TuMass[i] * (1 - theta) + rnorm(1, mean = 0, sd = 0.05 * (TuMass[i] * (1 - theta)))
+    }
   }
   return(TuMass)
 }
@@ -124,10 +138,6 @@ shinyServer(function(input, output,session) {
     print(sum((1-val$btn) * TuM)/10)
   })
   
-  # output$tu = renderPrint({
-  #   TuM = model(data,val,input$theta)
-  #   print(TuM)
-  # })
   output$gendC = renderText(sum((1-val$btn) * data[,"Gender"])/10)
   output$colC = renderText(sum((1-val$btn) * data[,"Color"])/10)
   
@@ -137,7 +147,7 @@ shinyServer(function(input, output,session) {
     barplot(c(wei,weiC),
             names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Weight", 
             ylab = "Weight(g)", col = c("#C7053D","beige"))
-  }, width = 400)
+  }, width = 300)
   
   output$age = renderPlot({
     age = sum(val$btn * data[,"Age(wks)"])/10
@@ -145,34 +155,38 @@ shinyServer(function(input, output,session) {
     barplot(c(age,ageC),
             names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Age", 
             ylab = "Age(wks)", col = c("#C7053D","beige"))
-  }, width = 400)
+  }, width = 300)
   
   output$tumor = renderPlot({
     TuM = model(data,val,input$theta)
-    age = sum(val$btn * TuM)/10
-    ageC = sum((1-val$btn) * TuM)/10
-    barplot(c(age,ageC),
-            names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Tumor Mass", 
-            ylab = "Tumor Mass(mg)", col = c("#C7053D","beige"))
-  },width = 400)
+    Tum = sum(val$btn * TuM)/10
+    TumC = sum((1-val$btn) * TuM)/10
+    barplot(c(Tum,TumC,(TumC-Tum)),
+            names.arg = c("Raspberry Group","Control Group","Difference"), main = "Comparison of Tumor Mass", 
+            ylab = "Tumor Mass(mg)", col = c("#C7053D","beige","#1C2C5B"),width = 5, xlim = c(1,30))
+    legend("right",c("Raspberry Group","Control Group","Difference"),col = c("#C7053D","beige","#1C2C5B"),fill=c("#C7053D","beige","#1C2C5B")
+           )
+  },width = 700)
   
   output$gender = renderPlot({
     barplot(prop.table(rbind(c((sum(val$btn * data[,"Gender"])),
                                (sum((1 - val$btn) * data[,"Gender"]))),
                              c((sum(val$btn * (1 - data[,"Gender"]))),
                                (sum((1 - val$btn) * (1 - data[,"Gender"]))))),2),
-            col = c("#FBB4AE","#B3CDE3"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of gender")
-  },width = 400)
+            col = c("#FBB4AE","#B3CDE3"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of gender",width = 4,xlim = c(1,15))
+    legend("right",c("Female","Male"), col = c("#FBB4AE","#B3CDE3"),fill = c("#FBB4AE","#B3CDE3"))
+  },width = 500)
   
   output$color = renderPlot({
     barplot(prop.table(rbind(c((sum(val$btn * data[,"Color"])),
                                (sum((1 - val$btn) * data[,"Color"]))),
                              c((sum(val$btn * (1 - data[,"Color"]))),
                                (sum((1 - val$btn) * (1 - data[,"Color"]))))),2),
-            col = c("#BE996E","black"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of colors")
-  },width = 400)
+            col = c("#BE996E","black"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of colors",width = 4,xlim = c(1,15))
+    legend("right",c("Brown","Black"), col = c("#BE996E","black"),fill = c("#BE996E","black"))
+  },width = 500)
   
-  ##Print raw data with group number (1 for experimental group; 0 for control group)
+  ##Print raw data with assigned group
   output$dataf = renderPrint({
     data$Group = val$btn
     for (i in 1:20){
@@ -183,7 +197,7 @@ shinyServer(function(input, output,session) {
     TuM = model(data,val,input$theta)
     data[,4] = TuM
     
-    
+    #Change the column color and gender from numeric into string
     for (i in 1:20){
       if (data$Color[i] == 1){data$Color[i] = "Brown"}
       else {data$Color[i] = "Black"}
@@ -195,6 +209,139 @@ shinyServer(function(input, output,session) {
     }
 
     print(data)
+  })
+  
+###########################################################
+#Save all the vectors that will be used later in reactive environment
+  table <- reactive({
+    compWeight = c()
+    compWeightC = c()
+    compAge = c()
+    compAgeC = c()
+    compTum = c()
+    compTumC = c()
+    diffWeight = c()
+    diffAge = c()
+    diffTum = c()
+  
+#Use for loop to simulate many times   
+    for (i in 1:input$times){
+      #Use random sampling to get 10 mice for experimental group each time
+      exp = sample(1:20,10)
+      #Get the average weight, age, tumor mass for both groups in each simulation and save as vectors
+      compWeight[i] = mean(data[exp,"Weight(g)"])
+      compWeightC[i] = mean(data[-exp,"Weight(g)"])
+      compAge[i] = mean(data[exp,"Age(wks)"])
+      compAgeC[i] = mean(data[-exp,"Age(wks)"])
+      Tumor = compModel(data,exp,input$compTheta)
+      compTum[i] = mean(Tumor[exp])
+      compTumC[i] = mean(Tumor[-exp])
+      #Get the difference between two groups in average weight, average age, average tumor mass
+      diffWeight[i] = compWeight[i] - compWeightC[i]
+      diffAge[i] = compAge[i] - compAgeC[i]
+      diffTum[i] = compTum[i] - compTumC[i]
+    }
+      meanWeight = c(mean(compWeightC), mean(compWeight))
+      meanAge = c(mean(compAgeC),mean(compAge))
+      meanTum = c(mean(compTumC),mean(compTum))
+      meanDiff = mean(diffTum)
+      compTable = data.frame(Group = c("Raspberry Group","Control Group"),
+                             Selected = c(10,10),
+                             Weight = meanWeight,
+                             Age = meanAge,
+                             Tumor = meanTum)
+      names(compTable) = c("Group","Total Selected","Weight(g)","Age(wks)","Tumor Mass(mg)")
+      
+      list(aveWeight = meanWeight, aveAge = meanAge, aveTum = meanTum, aveTable = compTable, Tumor = Tumor,
+           diffWeight = diffWeight, diffAge = diffAge, diffTum = diffTum, aveDiff = meanDiff, exp = exp)
+    
+  })
+  
+
+  
+  output$computerTable <- renderTable({
+    table()$aveTable
+    })
+  
+  output$compWeightBar <- renderPlot({
+    barplot(table()$aveWeight,
+            names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Weight", 
+            ylab = "Weight(g)", col = c("#C7053D","beige"))
+  }, width = 300)
+  
+  output$compAgeBar = renderPlot({
+    barplot(table()$aveAge,
+            names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Age", 
+            ylab = "Age(wks)", col = c("#C7053D","beige"))
+  }, width = 300)
+  
+  output$compTumorBar = renderPlot({
+    barplot(c(table()$aveTum,table()$aveDiff),
+            names.arg = c("Raspberry Group","Control Group","Difference"), main = "Comparison of Tumor Mass", 
+            ylab = "Tumor Mass(mg)", col = c("#C7053D","beige","#1C2C5B"),width = 5, xlim = c(1,30))
+    legend("right",c("Raspberry Group","Control Group","Difference"),col = c("#C7053D","beige","#1C2C5B"),fill=c("#C7053D","beige","#1C2C5B")
+    )
+  },width = 700)
+  
+  output$compWeightHist = renderPlot({
+    qplot(table()$diffWeight,
+          geom="histogram",
+          binwidth = 1,
+          main = "Differences in Weight between groups (g)",
+          xlab = "Weight (g)",
+          fill=I("#1C2C5B"),
+          col=I("#1C2C5B"),
+          alpha=I(.8)
+          ) 
+  })
+  
+  output$compAgeHist = renderPlot({
+    qplot(table()$diffAge,
+          geom="histogram",
+          binwidth = 0.3,
+          main = "Differences in Age between groups (wks)",
+          xlab = "Age (wks)",
+          fill=I("#1C2C5B"),
+          col=I("#1C2C5B"),
+          alpha=I(.8)
+    ) 
+  })
+  
+  output$compTumorHist = renderPlot({
+    qplot(table()$diffTum,
+          geom="histogram",
+          binwidth = 0.5,
+          main = "Differences in Tumor Mass between groups (mg)",
+          xlab = "Tumor Mass (mg)",
+          fill=I("#1C2C5B"),
+          col=I("#1C2C5B"),
+          alpha=I(.8)
+    ) 
+  })
+  
+  ##Print raw data with assigned group
+  output$compDataf = renderPrint({
+    data$Group = c()
+    for (i in 1:20){
+      if (any(data$Group[i] == table()$exp)){data$Group[i] = "Raspberry"}
+      else {data$Group[i] = "Control"}
+    }
+
+    data[,4] = table()$Tumor
+
+
+    for (i in 1:20){
+      if (data$Color[i] == 1){data$Color[i] = "Brown"}
+      else {data$Color[i] = "Black"}
+    }
+
+    for (i in 1:20){
+      if (data$Gender[i] == 1){data$Gender[i] = "Female"}
+      else {data$Gender[i] = "Male"}
+    }
+
+    print(data)
+
   })
   
 })

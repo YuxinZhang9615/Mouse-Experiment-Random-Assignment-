@@ -241,6 +241,7 @@ shinyServer(function(input, output,session) {
       diffAge[i] = compAge[i] - compAgeC[i]
       diffTum[i] = compTum[i] - compTumC[i]
     }
+      #Create a dataframe
       meanWeight = c(mean(compWeightC), mean(compWeight))
       meanAge = c(mean(compAgeC),mean(compAge))
       meanTum = c(mean(compTumC),mean(compTum))
@@ -252,6 +253,7 @@ shinyServer(function(input, output,session) {
                              Tumor = meanTum)
       names(compTable) = c("Group","Total Selected","Weight(g)","Age(wks)","Tumor Mass(mg)")
       
+      #Return these values
       list(aveWeight = meanWeight, aveAge = meanAge, aveTum = meanTum, aveTable = compTable, Tumor = Tumor,
            diffWeight = diffWeight, diffAge = diffAge, diffTum = diffTum, aveDiff = meanDiff, exp = exp)
     

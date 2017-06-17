@@ -33,37 +33,34 @@ shinyUI(
                                        img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),
                                        img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50)
                           ),
-                          
+                          #Display all the mice in main panel
                           mainPanel(
                             
                             fluidRow( column(3,bsButton("btn1",label = tags$img(src = 'brown3.png',width = 55))),
                                       column(4,bsButton("btn2",label = tags$img(src='brown3.png', width = 58))),
                                       column(4,bsButton("btn19",label = tags$img(src='black3.png', width = 195)))), br(),
-                            fluidRow( column(2, offset = 1, bsButton("btn4",label = tags$img(src='black3.png', width = 66))),
-                                      column(5,offset = 1, bsButton("btn5",label = tags$img(src='brown3.png', width = 69)))),
-                            br(),
-                            fluidRow( column(5,offset = 4, bsButton("btn6",label = tags$img(src='brown3.png', width = 74))),
+                            fluidRow( column(2, offset = 1, bsButton("btn13",label = tags$img(src='black3.png', width = 121))),
+                                      column(5,offset = 1, bsButton("btn15",label = tags$img(src='brown3.png', width = 130)))),
+                            fluidRow( column(5,offset = 2, bsButton("btn6",label = tags$img(src='brown3.png', width = 74))),
                                       column(2, offset = 1, bsButton("btn7",label = tags$img(src='brown3.png', width = 76)))),
-                            
-                            fluidRow( column(4, offset = 6, bsButton("btn8",label = tags$img(src='black3.png', width = 83)))),
-                            fluidRow( column(5, offset = 1, bsButton("btn9",label = tags$img(src='black3.png', width = 83))),
-                                      column(2, offset = 3, bsButton("btn10",label = tags$img(src='black3.png', width = 83)))),
-                            fluidRow( column(7, bsButton("btn11",label = tags$img(src='brown3.png', width = 85))),
-                                      column(5, bsButton("btn12",label = tags$img(src='brown3.png', width = 105)))),
-                            fluidRow( column(5, offset = 2, bsButton("btn13",label = tags$img(src='black3.png', width = 121)))),
-                            fluidRow( column(6, offset = 5, bsButton("btn14",label = tags$img(src='brown3.png', width = 125))),
-                                      column(2, offset = 1, bsButton("btn15",label = tags$img(src='brown3.png', width = 130)))),
-                            fluidRow( column(4, offset = 1, bsButton("btn16",label = tags$img(src='black3.png', width = 130))),
-                                      column(6, bsButton("btn17",label = tags$img(src='brown3.png', width = 132)))),
-                            fluidRow( column(4, offset = 0, bsButton("btn18",label = tags$img(src='brown3.png', width = 165)))),
-                            fluidRow( column(3, offset = 6, bsButton("btn3",label = tags$img(src='black3.png', width = 66))),
-                                      column(2, offset = 0, bsButton("btn20",label = tags$img(src='black3.png', width = 214)))),
+                            fluidRow( column(4, offset = 6, bsButton("btn8",label = tags$img(src='black3.png', width = 83))),
+                                      column(2, bsButton("btn9",label = tags$img(src='black3.png', width = 83)))),
+                            fluidRow( column(1, bsButton("btn11",label = tags$img(src='brown3.png', width = 85))),
+                                      column(2, offset = 4, bsButton("btn17",label = tags$img(src='brown3.png', width = 132)))),br(),
+                            fluidRow( column(2, offset = 0, bsButton("btn18",label = tags$img(src='brown3.png', width = 165))),
+                                      column(2, offset = 1,bsButton("btn10",label = tags$img(src='black3.png', width = 83))),
+                                      column(2, offset = 3, bsButton("btn14",label = tags$img(src='brown3.png', width = 125)))),
+                            fluidRow( column(5, offset = 4, bsButton("btn20",label = tags$img(src='black3.png', width = 214)))),
+                            fluidRow( column(5, offset = 3, bsButton("btn5",label = tags$img(src='brown3.png', width = 69))),
+                                      column(3, offset = 6, bsButton("btn3",label = tags$img(src='black3.png', width = 66))),
+                                      column(2, offset = 0, bsButton("btn12",label = tags$img(src='brown3.png', width = 105)))),
+                            fluidRow( column(1, offset = 1, bsButton("btn4",label = tags$img(src='black3.png', width = 66))),
+                                      column(4, offset = 1, bsButton("btn16",label = tags$img(src='black3.png', width = 130)))),
                             br(),
                             fluidRow(textOutput("num")," number of chosen mice."),
                             fluidRow(
                               column(8,actionButton("reset_button", "Reset")),
-                              column(2,actionButton("submit","Submit Selection")))
-                            
+                              column(2,actionButton("submit","Submit Selection")))                            
                           )
                           ),
                         

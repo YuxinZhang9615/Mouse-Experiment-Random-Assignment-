@@ -288,7 +288,7 @@ shinyServer(function(input, output,session) {
   output$compWeightHist = renderPlot({
     qplot(table()$diffWeight,
           geom="histogram",
-          binwidth = 1,
+          binwidth = 1.3,
           main = "Differences in Weight between groups (g)",
           xlab = "Weight (g)",
           fill=I("#1C2C5B"),
@@ -312,7 +312,7 @@ shinyServer(function(input, output,session) {
   output$compTumorHist = renderPlot({
     qplot(table()$diffTum,
           geom="histogram",
-          binwidth = 0.5,
+          binwidth = 10,
           main = "Differences in Tumor Mass between groups (mg)",
           xlab = "Tumor Mass (mg)",
           fill=I("#1C2C5B"),

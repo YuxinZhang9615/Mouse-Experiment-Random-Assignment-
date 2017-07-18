@@ -3,6 +3,7 @@ library(shinyBS)
 library(shinyjs)
 library(ggplot2)
 library(V8)
+library(shinydashboard)
 
 #Use jscode to for reset button to reload the app
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
@@ -62,6 +63,32 @@ data$Gender = as.numeric(data$Gender)
 
 ####################################################
 shinyServer(function(input, output,session) {
+  
+  output$concept1 <- renderUI({
+    print("Background Information")
+  })
+  
+  output$concept2 <- renderUI({
+    print("Raspberries have a high content of many beneficial compounds like vitamins C and E, folic and ellagic acid, calcium, selenium, etc. As a result, researchers have recently been investigating 
+                                          their anti-cancer properties. All of the twenty mice in the picture have a tumor growing just under the skin on their backs. To test if raspberries can help reduce the growth of these tumors, 
+          ten mice will be chosen to have raspberries added in their diet and the remaining ten will eat a normal diet without the raspberries.")
+  })
+  
+  output$instruction1 <- renderUI({
+    print("Instructions")
+  })
+  
+  output$instruction2 <- renderUI({
+    print("Please pick the ten mice which will receive the raspberry diet (click on mice you want to include in the raspberry group until you have selected ten, then click the submit selections button).")
+  })
+  
+  output$instruction3 <- renderUI({
+    print("If you select more than 10 mice, please click RESET to select again.")
+  })
+  
+  output$instruction4 <- renderUI({
+    print("Click RAW DATA to copy the data if you need to do further analysis.")
+  })
 
   #Save all the actionButton input into a vector for later convenience  
   val <- reactiveValues(btn = c())
@@ -110,7 +137,11 @@ shinyServer(function(input, output,session) {
   })
 
   #Counter: count how many buttons have been clicked
-  output$num = renderText(sum(val$btn))
+  output$number = renderText(sum(val$btn))
+  output$num <- renderUI({
+    paste("You have selected", sum(val$btn), "mice.")
+  })
+  
   #Print the average weight for experimental group
   output$aveWeight = renderText({
     print(sum(val$btn * data[,"Weight(g)"])/10)})
@@ -145,17 +176,18 @@ shinyServer(function(input, output,session) {
     wei = sum(val$btn * data[,"Weight(g)"])/10
     weiC = sum((1 - val$btn) * data[,"Weight(g)"])/10
     barplot(c(wei,weiC),
-            names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Weight", 
+            names.arg = c("Raspberry","Control"), 
+            main = "Comparison of Average Weight", 
             ylab = "Weight(g)", col = c("#C7053D","beige"))
-  }, width = 300)
+  }, width = 250, height = 350)
   
   output$age = renderPlot({
     age = sum(val$btn * data[,"Age(wks)"])/10
     ageC = sum((1 - val$btn) * data[,"Age(wks)"])/10
     barplot(c(age,ageC),
-            names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Age", 
+            names.arg = c("Raspberry","Control"), main = "Comparison of Average Age", 
             ylab = "Age(wks)", col = c("#C7053D","beige"))
-  }, width = 300)
+  }, width = 250, height = 350)
   
   output$tumor = renderPlot({
     TuM = model(data,val,input$theta)
@@ -166,25 +198,25 @@ shinyServer(function(input, output,session) {
             ylab = "Tumor Mass(mg)", col = c("#C7053D","beige","#1C2C5B"),width = 5, xlim = c(1,30))
     legend("right",c("Raspberry Group","Control Group","Difference"),col = c("#C7053D","beige","#1C2C5B"),fill=c("#C7053D","beige","#1C2C5B")
            )
-  },width = 700)
+  },width = 500, height = 350)
   
   output$gender = renderPlot({
     barplot(prop.table(rbind(c((sum(val$btn * data[,"Gender"])),
                                (sum((1 - val$btn) * data[,"Gender"]))),
                              c((sum(val$btn * (1 - data[,"Gender"]))),
                                (sum((1 - val$btn) * (1 - data[,"Gender"]))))),2),
-            col = c("#FBB4AE","#B3CDE3"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of gender",width = 4,xlim = c(1,15))
+            col = c("#FBB4AE","#B3CDE3"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of gender",width = 6,xlim = c(1,16))
     legend("right",c("Female","Male"), col = c("#FBB4AE","#B3CDE3"),fill = c("#FBB4AE","#B3CDE3"))
-  },width = 500)
+  },width = 280, height = 350)
   
   output$color = renderPlot({
     barplot(prop.table(rbind(c((sum(val$btn * data[,"Color"])),
                                (sum((1 - val$btn) * data[,"Color"]))),
                              c((sum(val$btn * (1 - data[,"Color"]))),
                                (sum((1 - val$btn) * (1 - data[,"Color"]))))),2),
-            col = c("#BE996E","black"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of colors",width = 4,xlim = c(1,15))
+            col = c("#BE996E","black"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of colors",width = 6,xlim = c(1,16))
     legend("right",c("Brown","Black"), col = c("#BE996E","black"),fill = c("#BE996E","black"))
-  },width = 500)
+  },width = 280, height = 350)
   
   ##Print raw data with assigned group
   output$dataf = renderPrint({
@@ -269,13 +301,13 @@ shinyServer(function(input, output,session) {
     barplot(table()$aveWeight,
             names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Weight", 
             ylab = "Weight(g)", col = c("#C7053D","beige"))
-  }, width = 300)
+  }, width = 280, height = 350)
   
   output$compAgeBar = renderPlot({
     barplot(table()$aveAge,
             names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Age", 
             ylab = "Age(wks)", col = c("#C7053D","beige"))
-  }, width = 300)
+  }, width = 280, height = 350)
   
   output$compTumorBar = renderPlot({
     barplot(c(table()$aveTum,table()$aveDiff),
@@ -283,7 +315,7 @@ shinyServer(function(input, output,session) {
             ylab = "Tumor Mass(mg)", col = c("#C7053D","beige","#1C2C5B"),width = 5, xlim = c(1,30))
     legend("right",c("Raspberry Group","Control Group","Difference"),col = c("#C7053D","beige","#1C2C5B"),fill=c("#C7053D","beige","#1C2C5B")
     )
-  },width = 700)
+  },width = 500, height = 350)
   
   output$compWeightHist = renderPlot({
     qplot(table()$diffWeight,
@@ -295,7 +327,7 @@ shinyServer(function(input, output,session) {
           col=I("#1C2C5B"),
           alpha=I(.8)
           ) 
-  })
+  }, height = 350)
   
   output$compAgeHist = renderPlot({
     qplot(table()$diffAge,
@@ -307,7 +339,7 @@ shinyServer(function(input, output,session) {
           col=I("#1C2C5B"),
           alpha=I(.8)
     ) 
-  })
+  }, height = 350)
   
   output$compTumorHist = renderPlot({
     qplot(table()$diffTum,
@@ -319,7 +351,7 @@ shinyServer(function(input, output,session) {
           col=I("#1C2C5B"),
           alpha=I(.8)
     ) 
-  })
+  }, height = 350)
   
   ##Print raw data with assigned group
   output$compDataf = renderPrint({

@@ -3,139 +3,193 @@ library(shinyjs)
 library(shinyBS)
 library(ggplot2)
 library(V8)
+library(shinydashboard)
 
 #Use jscode to for reset button to reload the app
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 
-shinyUI(
-  navbarPage("Random Assignment",
-                tabPanel("Generate by Hand",
-                      fluidPage(
-                        #Use jscode to for reset button to reload the app
-                        useShinyjs(),
-                        extendShinyjs(text = jsResetCode),
-                        #Use jscode to disable all the buttons
-                        tags$head(tags$script(HTML('
-                                                   Shiny.addCustomMessageHandler("jsCode",
-                                                   function(message) {
-                                                   console.log(message)
-                                                   eval(message.code);
-                                                   }
-                                                   );
-                                                   '))),
-                        
-                        titlePanel("Please choose 10 Mice for the Raspberry Treatment"),
-                        sidebarLayout(
-                          sidebarPanel(h3("Raspberries have a high content of many beneficial compounds like vitamins C and E, folic and ellagic acid, calcium, selenium, etc. As a result, researchers have recently been investigating 
-                                          their anti-cancer properties. The twenty mice in the picture all have a tumor growing just under the skin on their backs. To test if raspberries can help reduce the growth of these tumors, 
-                                          ten mice will be chosen to have raspberries added in their diet and the remaining ten will eat a normal diet without the raspberries."), 
-                                       h3("Please pick the ten mice to receive the raspberry diet (just click on mice you want to include in the raspberry group until you have selected ten, then click the submit selections button)."),
-                                       img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),
-                                       img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50)
-                          ),
-                          #Display all the mice in main panel
-                          mainPanel(
-                            
-                            fluidRow( column(3,bsButton("btn1",label = tags$img(src = 'brown3.png',width = 55))),
-                                      column(4,bsButton("btn2",label = tags$img(src='brown3.png', width = 58))),
-                                      column(4,bsButton("btn19",label = tags$img(src='black3.png', width = 195)))), br(),
-                            fluidRow( column(2, offset = 1, bsButton("btn13",label = tags$img(src='black3.png', width = 121))),
-                                      column(5,offset = 1, bsButton("btn15",label = tags$img(src='brown3.png', width = 130)))),
-                            fluidRow( column(5,offset = 2, bsButton("btn6",label = tags$img(src='brown3.png', width = 74))),
-                                      column(2, offset = 1, bsButton("btn7",label = tags$img(src='brown3.png', width = 76)))),
-                            fluidRow( column(4, offset = 6, bsButton("btn8",label = tags$img(src='black3.png', width = 83))),
-                                      column(2, bsButton("btn9",label = tags$img(src='black3.png', width = 83)))),
-                            fluidRow( column(1, bsButton("btn11",label = tags$img(src='brown3.png', width = 85))),
-                                      column(2, offset = 4, bsButton("btn17",label = tags$img(src='brown3.png', width = 132)))),br(),
-                            fluidRow( column(2, offset = 0, bsButton("btn18",label = tags$img(src='brown3.png', width = 165))),
-                                      column(2, offset = 1,bsButton("btn10",label = tags$img(src='black3.png', width = 83))),
-                                      column(2, offset = 3, bsButton("btn14",label = tags$img(src='brown3.png', width = 125)))),
-                            fluidRow( column(5, offset = 4, bsButton("btn20",label = tags$img(src='black3.png', width = 214)))),
-                            fluidRow( column(5, offset = 3, bsButton("btn5",label = tags$img(src='brown3.png', width = 69))),
-                                      column(3, offset = 6, bsButton("btn3",label = tags$img(src='black3.png', width = 66))),
-                                      column(2, offset = 0, bsButton("btn12",label = tags$img(src='brown3.png', width = 105)))),
-                            fluidRow( column(1, offset = 1, bsButton("btn4",label = tags$img(src='black3.png', width = 66))),
-                                      column(4, offset = 1, bsButton("btn16",label = tags$img(src='black3.png', width = 130)))),
-                            br(),
-                            fluidRow(textOutput("num")," number of chosen mice."),
-                            fluidRow(
-                              column(8,actionButton("reset_button", "Reset")),
-                              column(2,actionButton("submit","Submit Selection")))                            
-                          )
-                          ),
-                        
-                        
-                        hr(),
-                        conditionalPanel(
-                          condition = "(output.num == 10)&(input.submit != 0)",
-                          fluidPage(
-                            fluidRow(h2("Summary of the mice Hand-Selected for Comparison:")),
-                            fluidRow(column(9,
-                                            wellPanel(
-                                              fluidRow(
-                                                column(2,""), column(2,"Total selected"), column(2,"Average Weight(g)"), column(2,"Average Age(wks)"), column(2,"Average Tumor Mass(mg)"), column(1,"Proportion Female"), column(1,"Proportion Brown")
-                                              ), 
-                                              fluidRow(
-                                                column(2,"Rspb.Group"), column(2,"10"), column(2,textOutput("aveWeight")), column(2,textOutput("aveAge")), column(2,textOutput("aveTu")), column(1,textOutput("gend")), column(1,textOutput("col"))
-                                              ),
-                                              fluidRow(
-                                                column(2,"Control Group"), column(2,"10"), column(2,textOutput("aveWeightC")), column(2,textOutput("aveAgeC")), column(2,textOutput("aveTuC")), column(1,textOutput("gendC")), column(1,textOutput("colC"))
-                                              )
-                                            )
-                            ),
-                            column(3,
-                                sliderInput("theta", 
-                                            label = div(style='width:400px;', 
+
+ui <- dashboardPage(skin = "black",
+  dashboardHeader(title = "Random Assignment",
+                  titleWidth = 195),
+  dashboardSidebar(width = 195,
+    sidebarMenu(
+      menuItem("Instruction", tabName = "instruction", icon = icon("dashboard")),
+      menuItem("Generated by Hand", tabName = "hand", icon = icon("hand-o-right")),
+      menuItem("Generated by Computer", tabName = "computer", icon = icon("tv"))
+    )
+  ),
+  dashboardBody(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "stylecssMouseExp.css")
+    ),
+    tabItems(
+      tabItem(tabName = "instruction",
+              uiOutput("concept1"),
+              uiOutput("concept2"),
+              hr(),
+              # img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),
+              # img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),
+              column(11, offset = 1,uiOutput("instruction1")),
+              column(1,img(src='raspberry.png', width = 20)),column(11,uiOutput("instruction2")),
+              column(1,img(src='raspberry.png', width = 20)),column(11,uiOutput("instruction3")),
+              column(1,img(src='raspberry.png', width = 20)),column(11,uiOutput("instruction4"))
+              
+              
+      ),
+      tabItem(tabName = "hand",
+              fluidPage(
+                #Use jscode to for reset button to reload the app
+                useShinyjs(),
+                extendShinyjs(text = jsResetCode),
+                #Use jscode to disable all the buttons
+                tags$head(tags$script(HTML('
+                                           Shiny.addCustomMessageHandler("jsCode",
+                                           function(message) {
+                                           console.log(message)
+                                           eval(message.code);
+                                           }
+                                           );
+                                           '))),
+                
+                titlePanel(div(style = "position:absolute; top:1.5em; left:7em",h2("Please choose 10 Mice for the Raspberry Treatment"))),
+                br(),
+                #Display all the mice in main panel
+                fluidRow( column(3,bsButton("btn1",label = tags$img(src = 'brown3.png',width = 59))),
+                          column(4,bsButton("btn2",label = tags$img(src='brown3.png', width = 60))),
+                          column(4,bsButton("btn19",label = tags$img(src='black3.png', width = 110)))), br(),
+                fluidRow( column(2, offset = 1, bsButton("btn13",label = tags$img(src='black3.png', width = 87))),
+                          column(5,offset = 1, bsButton("btn15",label = tags$img(src='brown3.png', width = 90)))),
+                fluidRow( column(5,offset = 2, bsButton("btn6",label = tags$img(src='brown3.png', width = 68))),
+                          column(2, offset = 1, bsButton("btn7",label = tags$img(src='brown3.png', width = 69)))),
+                fluidRow( column(4, offset = 6, bsButton("btn8",label = tags$img(src='black3.png', width = 72))),
+                          column(2, bsButton("btn9",label = tags$img(src='black3.png', width = 72)))),
+                fluidRow( column(1, bsButton("btn11",label = tags$img(src='brown3.png', width = 73))),
+                          column(2, offset = 4, bsButton("btn17",label = tags$img(src='brown3.png', width = 91)))),br(),
+                fluidRow( column(2, offset = 0, bsButton("btn18",label = tags$img(src='brown3.png', width = 102))),
+                          column(2, offset = 1,bsButton("btn10",label = tags$img(src='black3.png', width = 72))),
+                          column(2, offset = 3, bsButton("btn14",label = tags$img(src='brown3.png', width = 88)))),
+                fluidRow( column(5, offset = 4, bsButton("btn20",label = tags$img(src='black3.png', width = 116)))),
+                fluidRow( column(5, offset = 3, bsButton("btn5",label = tags$img(src='brown3.png', width = 66))),
+                          column(3, offset = 6, bsButton("btn3",label = tags$img(src='black3.png', width = 64))),
+                          column(2, offset = 0, bsButton("btn12",label = tags$img(src='brown3.png', width = 81)))),
+                fluidRow( column(1, offset = 1, bsButton("btn4",label = tags$img(src='black3.png', width = 64))),
+                          column(4, offset = 1, bsButton("btn16",label = tags$img(src='black3.png', width = 90)))),
+                br(),
+                fluidRow(
+                  div(style = "position:absolute; top:42em",h3("You have selected")),
+                  div(style = "position:absolute; top:42em; left: 30em;",textOutput("number")),
+                  div(style = "position:absolute; top:42em; left: 35em;",h3("mice"))
+                  ),
+                fluidRow(
+                  column(2,offset = 6,bsButton("reset_button", "Reset", style = "danger", icon = icon("refresh"), size = "large")),
+                  bsPopover("reset_button",title = "Notice", "If you put on more than 10 points, click Reset to start again.", placement = "top"),
+                  column(2,offset = 1,bsButton("submit","Submit Selection", style = "danger",icon = icon("hand-o-up"), size = "large"))),
+                hr(),
+                conditionalPanel(
+                  condition = "(output.number == 10)&(input.submit != 0)",
+                  fluidPage(
+                    fluidRow(h2("Summary of the mice Hand-Selected for Comparison:")),
+                    fluidRow(column(12,
+                                    wellPanel(
+                                      fluidRow(
+                                        column(2,""), column(2,"Total selected"), column(2,"Average Weight(g)"), column(2,"Average Age(wks)"), column(2,"Average Tumor Mass(mg)"), column(1,"Proportion Female"), column(1,"Proportion Brown")
+                                      ), 
+                                      fluidRow(
+                                        column(2,"Rspb.Group"), column(2,"10"), column(2,textOutput("aveWeight")), column(2,textOutput("aveAge")), column(2,textOutput("aveTu")), column(1,textOutput("gend")), column(1,textOutput("col"))
+                                      ),
+                                      fluidRow(
+                                        column(2,"Control Group"), column(2,"10"), column(2,textOutput("aveWeightC")), column(2,textOutput("aveAgeC")), column(2,textOutput("aveTuC")), column(1,textOutput("gendC")), column(1,textOutput("colC"))
+                                      )
+                                    )
+                    )
+                    ),
+                    fluidRow(
+                      column(3,plotOutput("weight")), column(3,plotOutput("age")), column(6,plotOutput("tumor")) 
+                    ),
+                    fluidRow(
+                      column(3,plotOutput("gender")), column(3,plotOutput("color")),
+                      column(6, div(style = "position:absolute; top: 3em; left: 2em",
+                                    sliderInput("theta", 
+                                            label = div(style='width: 380px;', 
                                                         div(style='float:left;', 'No Treatment Effect'), 
                                                         div(style='float:right;', 'Absolute Treatment Effect')), 
-                                            min = 0, max = 1, value = 0.6, width = '400px'))
-                            ),
-                            fluidRow(
-                              column(3,plotOutput("weight")), column(3,plotOutput("age")), column(6,plotOutput("tumor")) 
-                            ),
-                            fluidRow(
-                              column(5,plotOutput("gender")), column(5,plotOutput("color"))
-                            ),
-                            fluidRow(
-                              actionButton("getdata","Use Raw Data")
-                            )), conditionalPanel("input.getdata != 0", verbatimTextOutput("dataf"))
-                          
-                        )
-                        )
-                      
-                      ),
-             tabPanel("Generate by Computer",
-                      fluidPage(
-                        wellPanel(
-                          fluidRow(
-                                   column(1,numericInput("times", "Simulations", value = 1)),
-                                   column(5,h4("Enter number to run multiple trials. (Hint: Try entering 10, 100, 1000, etc.)"))
-                                   )
-                          ),
-                        fluidRow(
-                          column(6, tableOutput("computerTable")),
-                          column(6, sliderInput("compTheta", 
-                                                label = div(style='width:400px;', 
-                                                            div(style='float:left;', 'No Treatment Effect'), 
-                                                            div(style='float:right;', 'Absolute Treatment Effect')), 
-                                                min = 0, max = 1, value = 0.6, width = '400px'))
-                        ),
-                        fluidRow(
-                          column(3,plotOutput("compWeightBar")), column(3,plotOutput("compAgeBar")), column(6,plotOutput("compTumorBar"))
-                        ),
-                        fluidRow(
-                          column(4,plotOutput("compWeightHist")), column(4,plotOutput("compAgeHist")), column(4,plotOutput("compTumorHist"))
-                        ),
-                    
-                            fluidRow(
-                              actionButton("compGetdata","Use the data from last trial")
-                            )
-                            , conditionalPanel("input.compGetdata != 0", 
-                                               column(6,verbatimTextOutput("compDataf"))
-                                               )
-                          )
-
-                      )
-  
-             )
+                                            min = 0, max = 1, value = 0.6, width = '90%')))
+                    ),
+                    fluidRow(
+                      actionButton("getdata","Use Raw Data")
+                    )), conditionalPanel("input.getdata != 0", verbatimTextOutput("dataf"))
+                  
+                )
+                
+               
+              )
+      ),
+      tabItem(tabName = "computer",
+              fluidPage(
+                wellPanel(
+                  fluidRow(
+                    column(1,numericInput("times", "Simulations", value = 1)),
+                    column(5,h4("Enter number to run multiple trials. (Hint: Try entering 10, 100, 1000, etc.)"))
+                  )
+                ),
+                fluidRow(
+                  column(6, tableOutput("computerTable")),
+                  column(6, sliderInput("compTheta", 
+                                        label = div(style='width:400px;', 
+                                                    div(style='float:left;', 'No Treatment Effect'), 
+                                                    div(style='float:right;', 'Absolute Treatment Effect')), 
+                                        min = 0, max = 1, value = 0.6, width = '400px'))
+                ),
+                fluidRow(
+                  column(3,plotOutput("compWeightBar")), column(3,plotOutput("compAgeBar")), column(6,plotOutput("compTumorBar"))
+                ),
+                fluidRow(
+                  column(4,plotOutput("compWeightHist")), column(4,plotOutput("compAgeHist")), column(4,plotOutput("compTumorHist"))
+                ),
+                fluidRow(
+                  actionButton("compGetdata","Use the data from last trial")
+                )
+                , conditionalPanel("input.compGetdata != 0", 
+                                   column(6,verbatimTextOutput("compDataf"))
+                )
+                
+              )
+      )
+    )
+  )
 )
+
+
+# shinyUI(
+#   navbarPage("Random Assignment",
+#                 tabPanel("Generate by Hand",
+#                       fluidPage(
+#                         
+#                         sidebarLayout(
+#                           sidebarPanel(
+#                           ),
+#                           
+#                           mainPanel(
+#                             
+#                                                        
+#                           )
+#                           )
+#                         
+#                         
+#                         
+#                         )
+#                       
+#                       ),
+#              tabPanel("Generate by Computer",
+#                       fluidPage(
+#                         
+#                        
+#                     
+#                            
+#                           )
+# 
+#                       )
+#   
+#              )
+# )

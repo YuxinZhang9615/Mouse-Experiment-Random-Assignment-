@@ -25,16 +25,42 @@ ui <- dashboardPage(skin = "black",
     ),
     tabItems(
       tabItem(tabName = "instruction",
-              uiOutput("concept1"),
-              uiOutput("concept2"),
-              hr(),
-              # img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),img(src='raspberry.png', width = 50),
-              # img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50), img(src='raspberry.png', width = 50),
-              column(11, offset = 1,uiOutput("instruction1")),
-              column(1,img(src='raspberry.png', width = 20)),column(11,uiOutput("instruction2")),
-              column(1,img(src='raspberry.png', width = 20)),column(11,uiOutput("instruction3")),
-              column(1,img(src='raspberry.png', width = 20)),column(11,uiOutput("instruction4"))
-              
+              fluidRow(
+                column(11,offset = 1, uiOutput("about1"))
+              ),
+              fluidRow(
+                column(1,img(src = "raspberry.png", width = 20)),
+                column(11,uiOutput("about2"))
+              ),br(),
+              fluidRow(
+                column(11,offset = 1, uiOutput("background1"))
+              ),
+              fluidRow(
+                column(1,img(src = "raspberry.png", width = 20)),
+                column(11,uiOutput("background2"))
+              ),br(),
+              fluidRow(
+                column(11,offset = 1, uiOutput("instruction1"))
+              ),
+              fluidRow(
+                column(1,img(src = "raspberry.png", width = 20)),
+                column(11,uiOutput("instruction2"))
+              ),
+              fluidRow(
+                column(1,img(src = "raspberry.png", width = 20)),
+                column(11,uiOutput("instruction3"))
+              ),
+              fluidRow(
+                column(1,img(src = "raspberry.png", width = 20)),
+                column(11,uiOutput("instruction4"))
+              ),br(),
+              fluidRow(
+                column(11,offset = 1, uiOutput("ack1"))
+              ),
+              fluidRow(
+                column(1,img(src = "raspberry.png", width = 20)),
+                column(11, uiOutput("ack2"))
+              )
               
       ),
       tabItem(tabName = "hand",

@@ -26,32 +26,23 @@ aside.main-sidebar {
 }
 
 
-
-#concept1 {
+#about1 {
   font-size: 20px;
   font-weight: 600;
 }
-#concept2 {
+#background1 {
   font-size: 20px;
-  font-weight: 550;
+  font-weight: 600;
 }
-
 #instruction1 {
   font-size: 20px;
   font-weight: 600;
 }
-#instruction2 {
+#ack1 {
   font-size: 20px;
-  font-weight: 550;
+  font-weight: 600;
 }
-#instruction3 {
-  font-size: 20px;
-  font-weight: 550;
-}
-#instruction4 {
-  font-size: 20px;
-  font-weight: 550;
-}
+
 
 
 #number {

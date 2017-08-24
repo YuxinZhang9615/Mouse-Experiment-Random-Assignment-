@@ -64,30 +64,43 @@ data$Gender = as.numeric(data$Gender)
 ####################################################
 shinyServer(function(input, output,session) {
   
-  output$concept1 <- renderUI({
-    print("Background Information")
+  output$about1 <- renderUI({
+    print("About")
+  })
+  output$about2 <- renderUI({
+    h4("Gain better understanding of random assignment by randomly assigning 10 mice for the raspberry experiment.")
+  })
+  output$background1 <- renderUI({
+    print("Background")
   })
   
-  output$concept2 <- renderUI({
-    print("Raspberries have a high content of many beneficial compounds like vitamins C and E, folic and ellagic acid, calcium, selenium, etc. As a result, researchers have recently been investigating 
+  output$background2 <- renderUI({
+    h4("Raspberries have a high content of many beneficial compounds like vitamins C and E, folic and ellagic acid, calcium, selenium, etc. As a result, researchers have recently been investigating 
                                           their anti-cancer properties. All of the twenty mice in the picture have a tumor growing just under the skin on their backs. To test if raspberries can help reduce the growth of these tumors, 
           ten mice will be chosen to have raspberries added in their diet and the remaining ten will eat a normal diet without the raspberries.")
   })
   
   output$instruction1 <- renderUI({
-    print("Instructions")
+    print("Instruction")
   })
   
   output$instruction2 <- renderUI({
-    print("Please pick the ten mice which will receive the raspberry diet (click on mice you want to include in the raspberry group until you have selected ten, then click the submit selections button).")
+    h4("Please pick the ten mice which will receive the raspberry diet (click on mice you want to include in the raspberry group until you have selected ten, then click the submit selections button).")
   })
   
   output$instruction3 <- renderUI({
-    print("If you select more than 10 mice, please click RESET to select again.")
+    h4("If you select more than 10 mice, please click RESET to select again.")
   })
   
   output$instruction4 <- renderUI({
-    print("Click RAW DATA to copy the data if you need to do further analysis.")
+    h4("Click RAW DATA to copy the data if you need to do further analysis.")
+  })
+  
+  output$ack1 <- renderUI({
+    print("Acknowledgement and Credit")
+  })
+  output$ack2 <- renderUI({
+    h4("This app was developed and coded by Yuxin Zhang based on extending the idea in the", tags$a(href = "https://www.causeweb.org/cause/archive/mouse_experiment/","Dr.Dennis Pearl's app", style = "text-decoration: underline; color: #f08080"),".")
   })
 
   #Save all the actionButton input into a vector for later convenience  

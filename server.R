@@ -68,7 +68,7 @@ shinyServer(function(input, output,session) {
     print("About")
   })
   output$about2 <- renderUI({
-    h4("Gain better understanding of random assignment by randomly assigning 10 mice for the raspberry experiment.")
+    h4("Gain better understanding of random assignment versus haphazard assignment by randomly assigning 10 mice for the raspberry experiment. The app also demonstrates the distribution of samples averages and proportions.")
   })
   output$background1 <- renderUI({
     print("Background")
@@ -85,7 +85,7 @@ shinyServer(function(input, output,session) {
   })
   
   output$instruction2 <- renderUI({
-    h4("Please pick the ten mice which will receive the raspberry diet (click on mice you want to include in the raspberry group until you have selected ten, then click the submit selections button).")
+    h4("Please pick the ten mice that will receive the raspberry diet (quickly click on mice you want to include in the raspberry group until you have selected ten, then click the submit selections button).")
   })
   
   output$instruction3 <- renderUI({
@@ -100,9 +100,13 @@ shinyServer(function(input, output,session) {
     print("Acknowledgement and Credit")
   })
   output$ack2 <- renderUI({
-    h4("This app was developed and coded by Yuxin Zhang based on extending the idea in the", tags$a(href = "https://www.causeweb.org/cause/archive/mouse_experiment/","Dr.Dennis Pearl's app", style = "text-decoration: underline; color: #f08080"),".")
+    h4("This app was developed and coded by Yuxin Zhang based on extending the idea in the", tags$a(href = "https://www.causeweb.org/cause/archive/mouse_experiment/","app by Dennis Pearl and Tom Santner", style = "text-decoration: underline; color: #f08080"),".")
   })
 
+  observeEvent(input$go,{
+    updateTabItems(session,"tabs","hand")
+  })
+  
   #Save all the actionButton input into a vector for later convenience  
   val <- reactiveValues(btn = c())
   observe({
@@ -140,13 +144,25 @@ shinyServer(function(input, output,session) {
     }
   }))
 
-  #When 10 buttons have been clicked, disable all buttons. 
+  #When 10 buttons have been clicked, enable the submit button. 
+  observe({
+    if (sum(val$btn) == 10){
+      updateButton(session, "submit","Submit Selection", style = "danger",icon = icon("hand-o-up"), size = "large", disabled = FALSE)
+    }
+  })
+  #When more than 10 buttons have been clicked, disable the submit button.
   observe({
     if (sum(val$btn) > 10){
-      for (i in 1:20){
-        disableActionButton(paste("btn",i,sep = ""),session)
-      }
+      updateButton(session, "submit", disabled = TRUE)
     }
+  })
+  #When the submit button is clicked, redirect to the next page.
+  observeEvent(input$submit,{
+    updateTabItems(session, "tabs", "summary")
+  })
+  #When the "compare" button is clicked, redirect to the computer page.
+  observeEvent(input$compare,{
+    updateTabItems(session, "tabs", "computer")
   })
 
   #Counter: count how many buttons have been clicked
@@ -218,18 +234,18 @@ shinyServer(function(input, output,session) {
                                (sum((1 - val$btn) * data[,"Gender"]))),
                              c((sum(val$btn * (1 - data[,"Gender"]))),
                                (sum((1 - val$btn) * (1 - data[,"Gender"]))))),2),
-            col = c("#FBB4AE","#B3CDE3"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of gender",width = 6,xlim = c(1,16))
+            col = c("#FBB4AE","#B3CDE3"),names.arg = c("Raspberry","Control"),main = "Comparison of gender",width = 6,xlim = c(1,16))
     legend("right",c("Female","Male"), col = c("#FBB4AE","#B3CDE3"),fill = c("#FBB4AE","#B3CDE3"))
-  },width = 280, height = 350)
+  },width = 270, height = 350)
   
   output$color = renderPlot({
     barplot(prop.table(rbind(c((sum(val$btn * data[,"Color"])),
                                (sum((1 - val$btn) * data[,"Color"]))),
                              c((sum(val$btn * (1 - data[,"Color"]))),
                                (sum((1 - val$btn) * (1 - data[,"Color"]))))),2),
-            col = c("#BE996E","black"),names.arg = c("Raspberry Group","Control Group"),main = "Comparison of colors",width = 6,xlim = c(1,16))
+            col = c("#BE996E","black"),names.arg = c("Raspberry","Control"),main = "Comparison of colors",width = 6,xlim = c(1,16))
     legend("right",c("Brown","Black"), col = c("#BE996E","black"),fill = c("#BE996E","black"))
-  },width = 280, height = 350)
+  },width = 270, height = 350)
   
   ##Print raw data with assigned group
   output$dataf = renderPrint({
@@ -296,7 +312,7 @@ shinyServer(function(input, output,session) {
                              Weight = meanWeight,
                              Age = meanAge,
                              Tumor = meanTum)
-      names(compTable) = c("Group","Total Selected","Weight(g)","Age(wks)","Tumor Mass(mg)")
+      names(compTable) = c("Group","Total Selected","Weight (g)","Age (wks)","Tumor Mass (mg)")
       
       #Return these values
       list(aveWeight = meanWeight, aveAge = meanAge, aveTum = meanTum, aveTable = compTable, Tumor = Tumor,
@@ -314,13 +330,13 @@ shinyServer(function(input, output,session) {
     barplot(table()$aveWeight,
             names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Weight", 
             ylab = "Weight(g)", col = c("#C7053D","beige"))
-  }, width = 280, height = 350)
+  }, width = 250, height = 350)
   
   output$compAgeBar = renderPlot({
     barplot(table()$aveAge,
             names.arg = c("Raspberry Group","Control Group"), main = "Comparison of Average Age", 
             ylab = "Age(wks)", col = c("#C7053D","beige"))
-  }, width = 280, height = 350)
+  }, width = 250, height = 350)
   
   output$compTumorBar = renderPlot({
     barplot(c(table()$aveTum,table()$aveDiff),
